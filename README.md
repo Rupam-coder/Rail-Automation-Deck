@@ -1,0 +1,103 @@
+# Rail Nexus
+
+Rail Nexus is a browser-based railway operations dashboard for train movement, track inspection, line safety, and emergency routing.
+
+## Features
+
+- Four 15 km railway tracks with live map visualization.
+- Six configurable trains with line, speed, position, and enable controls.
+- Live train movement simulation with pause and resume controls.
+- Automatic headway monitoring with a 3.5 km minimum separation threshold.
+- Inspection Cart System with inspections at every 2 km checkpoint.
+- Track defect signals with exact line and chainage coordinates.
+- Automatic blocking of every train on a defective line.
+- `DANGER` status on blocked trains and stationary movement during simulation.
+- Line 3 reserved as the Inspection Standby Track.
+- Line 4 reserved as the Goods Carrier Standby Track.
+- Go to Track controls for moving trains between tracks.
+- Automatic reservation warnings when the wrong train is sent to a standby track.
+- Emergency reroute controls for Line 1 and Line 2 conflicts.
+- Central safety shield showing the current movement authority state.
+- Document vault, depot induction planning, and what-if simulation modules.
+
+## Track Layout
+
+| Track | Name | Role |
+| --- | --- | --- |
+| Line 1 | North Line | General passenger movement |
+| Line 2 | South Line | General passenger movement |
+| Line 3 | Inspection Standby Track | Reserved for the inspection train |
+| Line 4 | Goods Carrier Standby Track | Reserved for the goods carrier |
+
+## Default Trains
+
+| Train | Role | Default track |
+| --- | --- | --- |
+| T12 | North Line lead | Line 1 |
+| T09 | North Line follower | Line 1 |
+| T04 | South Line lead | Line 2 |
+| T18 | South Line follower | Line 2 |
+| T21 | Inspection train | Line 3 |
+| T27 | Goods carrier | Line 4 |
+
+## Inspection Workflow
+
+1. Open the **Real-Time Traffic & Safety Shield** tab.
+2. Select the track to inspect.
+3. Click **Inspect Next 2 km** to advance the inspection cart.
+4. A healthy checkpoint reports `TRACK OK`.
+5. Use **Simulate Defect** before inspection to test a failed checkpoint.
+6. A defect reports the exact track and chainage, changes the signal to `BLOCK TRACK`, and holds all trains on that line.
+7. Reset the cart after the track is cleared.
+
+When a line is blocked, its trains show `DANGER`, remain stationary during live simulation, and display the reason in the line safety directive. Trains on other lines continue to operate.
+
+## Train Routing
+
+Each train card includes **Go to Track** controls:
+
+- Tracks 1 and 2 accept general train movement.
+- Track 3 accepts only the inspection train, T21.
+- Track 4 accepts only the goods carrier, T27.
+- A successful route change places the train at 0.0 km and updates its map position immediately.
+
+## Run Locally
+
+The project is a static browser application and does not require a build step.
+
+From the repository directory, run:
+
+```powershell
+python -m http.server 8000
+```
+
+Open:
+
+```text
+http://localhost:8000/index.html
+```
+
+The app uses ES modules, so serve it through a local HTTP server instead of opening `index.html` directly from the file system.
+
+## Project Structure
+
+```text
+index.html              Application shell
+css/styles.css          Design system and dashboard styles
+js/app.js               Application coordinator and global state
+js/data.js              Fleet and train data generator
+js/trafficControl.js    Map, simulation, inspection, and safety logic
+js/documentVault.js     Document compliance module
+js/depotInduction.js    Depot planning module
+js/whatIfSimulator.js   Scenario simulation module
+```
+
+## Validation
+
+The main traffic module can be syntax-checked with:
+
+```powershell
+node --check js/trafficControl.js
+```
+
+The interface is designed for modern browsers with JavaScript module support and access to the Lucide icon CDN.
